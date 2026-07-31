@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday, My Love | A Magical Journey</title>
+    
+    <!-- Meta Tags for SEO and social sharing -->
+    <meta name="description" content="A magical, interactive birthday surprise journey filled with love, memories, and dreams.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css?v=1.3">
+</head>
+<body>
+    <!-- Global Starry Canvas Background -->
+    <canvas id="sky-canvas"></canvas>
+    
+    <!-- Interactive Glow Cursor Follower -->
+    <div id="cursor-glow"></div>
+    
+    <!-- Music Toggle Button (Persistent Floating Control) -->
+    <button id="music-toggle" class="floating-btn" aria-label="Toggle Background Music">
+        <i class="fas fa-music"></i>
+        <span class="music-wave-container">
+            <span class="music-bar"></span>
+            <span class="music-bar"></span>
+            <span class="music-bar"></span>
+        </span>
+    </button>
+
+    <!-- 1. Elegant Loading Screen -->
+    <section id="loading-screen" class="active-screen">
+        <div class="loader-content">
+            <div class="loader-ring"></div>
+            <div class="loader-heart"><i class="fas fa-heart"></i></div>
+            <p id="loading-text" class="loading-quote">Preparing something beautiful...</p>
+        </div>
+    </section>
+
+    <!-- 2. Landing Screen with Live Birthday Countdown -->
+    <section id="landing-screen" class="screen hidden">
+        <div class="glass-container landing-card">
+            <span class="magic-sparkle">✨</span>
+            <h1 class="elegant-title typewriter-text">Someone special has something waiting for you...</h1>
+            <p class="romantic-subtitle">This surprise was made with lots of love.</p>
+            
+            <!-- Live Countdown Timer -->
+            <div class="birthday-countdown-container" id="bday-countdown-box">
+                <p class="countdown-label"><i class="far fa-clock"></i> Counting down to your special day...</p>
+                <div class="countdown-timer-grid">
+                    <div class="timer-unit"><span id="days">00</span><label>Days</label></div>
+                    <div class="timer-unit"><span id="hours">00</span><label>Hours</label></div>
+                    <div class="timer-unit"><span id="minutes">00</span><label>Mins</label></div>
+                    <div class="timer-unit"><span id="seconds">00</span><label>Secs</label></div>
+                </div>
+                <button id="bypass-countdown" class="bypass-link">(Bypass Countdown for Testing)</button>
+            </div>
+            
+            <button id="start-journey-btn" class="glowing-btn">
+                Begin the Journey <span class="heart-pulse">❤️</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- 3. Unlock the Surprise (with custom passcode field) -->
+    <section id="unlock-screen" class="screen hidden">
+        <div class="glass-container lock-card">
+            <h2 class="section-title">Unlock the Surprise</h2>
+            <p class="lock-instruction">Only someone very special can unlock this.</p>
+            
+            <div class="lock-wrapper">
+                <div class="padlock" id="main-padlock">
+                    <div class="shackle"></div>
+                    <div class="body">
+                        <div class="keyhole"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passcode Entry Form -->
+            <div class="passcode-input-wrapper">
+                <input type="text" id="passcode-input" placeholder="Type secret password or nickname..." autocomplete="off">
+                <p class="passcode-hint"><i class="fas fa-info-circle"></i> Hint: The word is "LOVE" (or try your nickname) ❤️</p>
+                <p id="unlock-error-msg" class="error-msg-text"></p>
+            </div>
+            
+            <button id="unlock-btn" class="glowing-btn">
+                Unlock <i class="fas fa-key"></i>
+            </button>
+        </div>
+    </section>
+
+    <!-- 4. Our Memories (3D Scrapbook Album) -->
+    <section id="memories-screen" class="screen hidden">
+        <div class="section-wrapper flex-center">
+            <h2 class="section-title handwritten">Our Memory Scrapbook</h2>
+            <p class="section-subtitle">Turn the pages to walk down memory lane.</p>
+            
+            <!-- 3D Book Layout Container -->
+            <div class="book-container">
+                <button class="book-nav-btn prev-page-btn" id="prev-page-btn" aria-label="Previous Page"><i class="fas fa-chevron-left"></i></button>
+                
+                <div class="book" id="scrapbook">
+                    <!-- Page 1: Cover (Leaf 1 Front) & Milestone 1 (Leaf 1 Back) -->
+                    <div class="page" id="page-1">
+                        <div class="page-face page-front book-cover">
+                            <div class="cover-design">
+                                <div class="cover-flower"><i class="fas fa-seedling"></i></div>
+                                <h2 class="cover-title">Our Story</h2>
+                                <p class="cover-subtitle">A collection of beautiful milestones</p>
+                                <span class="cover-heart">❤️</span>
+                            </div>
+                        </div>
+                        <div class="page-face page-back paper-texture">
+                            <div class="scrapbook-page-content">
+                                <span class="pin-sticker">📌</span>
+                                <div class="scrapbook-polaroid" data-index="0">
+                                    <div class="tape-effect"></div>
+                                    <div class="scrapbook-img-frame">
+                                        <img data-src="assets/images/memory_1.jpg?v=1.5" src="assets/images/memory_1.jpg?v=1.5" alt="First Meeting" class="lazy-load-img">
+                                    </div>
+                                    <div class="scrapbook-details">
+                                        <h3 contenteditable="true" class="editable-title">❤️ First Meeting</h3>
+                                        <span class="editable-date">Jan 19, 2026</span>
+                                        <p contenteditable="true" class="editable-desc">It all started here, and my world changed for the better. Write your own memory here.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Page 2: Milestone 2 (Leaf 2 Front) & Milestone 3 (Leaf 2 Back) -->
+                    <div class="page" id="page-2">
+                        <div class="page-face page-front paper-texture">
+                            <div class="scrapbook-page-content">
+                                <span class="leaf-sticker">🌸</span>
+                                <div class="scrapbook-polaroid" data-index="1">
+                                    <div class="tape-effect"></div>
+                                    <div class="scrapbook-img-frame">
+                                        <img data-src="assets/images/memory_2.jpg?v=1.5" src="assets/images/memory_2.jpg?v=1.5" alt="Selfie Together" class="lazy-load-img">
+                                    </div>
+                                    <div class="scrapbook-details">
+                                        <h3 contenteditable="true" class="editable-title">🌸 Selfie Together</h3>
+                                        <span class="editable-date">March 24, 2026</span>
+                                        <p contenteditable="true" class="editable-desc">I still laugh out loud thinking about this day. You make everything so fun! Write your own memory here.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="page-face page-back paper-texture">
+                            <div class="scrapbook-page-content">
+                                <span class="heart-sticker">🍕</span>
+                                <div class="scrapbook-polaroid" data-index="2">
+                                    <div class="tape-effect"></div>
+                                    <div class="scrapbook-img-frame">
+                                        <img data-src="assets/images/memory_3.jpg?v=1.5" src="assets/images/memory_3.jpg?v=1.5" alt="Our First Date" class="lazy-load-img">
+                                    </div>
+                                    <div class="scrapbook-details">
+                                        <h3 contenteditable="true" class="editable-title">🍕 Our First Date</h3>
+                                        <span class="editable-date">Feb 16, 2026</span>
+                                        <p contenteditable="true" class="editable-desc">Watching the sky change colors with you is my absolute favorite place to be. Write your own memory here.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Page 3: Milestone 4 (Leaf 3 Front) & Milestone 5 (Leaf 3 Back) -->
+                    <div class="page" id="page-3">
+                        <div class="page-face page-front paper-texture">
+                            <div class="scrapbook-page-content">
+                                <span class="star-sticker">🎉</span>
+                                <div class="scrapbook-polaroid" data-index="3">
+                                    <div class="tape-effect"></div>
+                                    <div class="scrapbook-img-frame">
+                                        <img data-src="assets/images/memory_4.jpg?v=1.5" src="assets/images/memory_4.jpg?v=1.5" alt="Our Favorite Day" class="lazy-load-img">
+                                    </div>
+                                    <div class="scrapbook-details">
+                                        <h3 contenteditable="true" class="editable-title">🎉 Our Favorite Day</h3>
+                                        <span class="editable-date">July 6, 2026</span>
+                                        <p contenteditable="true" class="editable-desc">Your smile is my home. Let's capture a thousand more moments like this. Write your own memory here.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="page-face page-back paper-texture">
+                            <div class="scrapbook-page-content">
+                                <span class="pin-sticker">🌅</span>
+                                <div class="scrapbook-polaroid" data-index="4">
+                                    <div class="tape-effect"></div>
+                                    <div class="scrapbook-img-frame">
+                                        <img data-src="assets/images/memory_5.jpg?v=1.5" src="assets/images/memory_5.jpg?v=1.5" alt="Latest Picture Together" class="lazy-load-img">
+                                    </div>
+                                    <div class="scrapbook-details">
+                                        <h3 contenteditable="true" class="editable-title">📸 Latest Picture Together</h3>
+                                        <span class="editable-date">July 30, 2026</span>
+                                        <p contenteditable="true" class="editable-desc">Even the simplest days become unforgettable adventures when I'm with you. Write your own memory here.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Page 4: Outro (Leaf 4 Front) & Back Cover (Leaf 4 Back) -->
+                    <div class="page" id="page-4">
+                        <div class="page-face page-front paper-texture flex-center">
+                            <div class="scrapbook-outro">
+                                <span class="magic-sparkle">✨</span>
+                                <h3 class="outro-heading">Our Story Continues...</h3>
+                                <p class="outro-desc">Every page we turn together is another dream come true. I cannot wait to write the rest of the book with you.</p>
+                                <button id="to-love-notes-btn-scrapbook" class="glowing-btn">Continue the Journey ❤️</button>
+                            </div>
+                        </div>
+                        <div class="page-face page-back book-cover">
+                            <div class="cover-design back-cover">
+                                <p>To be continued...</p>
+                                <span class="cover-heart">💖</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="book-nav-btn next-page-btn" id="next-page-btn" aria-label="Next Page"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            
+            <p class="book-tip-text">(Tap on the photo to zoom and view details in full-screen lightbox)</p>
+        </div>
+    </section>
+
+
+
+    <!-- 6. Countdown -->
+    <section id="countdown-screen" class="screen hidden">
+        <div class="section-wrapper flex-center">
+            <h2 class="countdown-heading">The countdown begins...</h2>
+            <div class="countdown-timer-box">
+                <span id="countdown-number" class="countdown-digit">5</span>
+            </div>
+            <div class="countdown-ripple"></div>
+        </div>
+    </section>
+
+    <!-- 7. Grand Birthday Reveal -->
+    <section id="reveal-screen" class="screen hidden">
+        <div class="section-wrapper flex-center reveal-layout">
+            <div class="fireworks-container">
+                <canvas id="fireworks-canvas"></canvas>
+            </div>
+            
+            <h1 class="reveal-title glow-text animate-pulse">🎉 HAPPY BIRTHDAY MY LOVE 🎉</h1>
+            
+            <!-- 3D CSS Cake Component -->
+            <div class="cake-container">
+                <div class="cake">
+                    <div class="plate"></div>
+                    <div class="layer layer-bottom"></div>
+                    <div class="layer layer-middle"></div>
+                    <div class="layer layer-top"></div>
+                    <div class="icing"></div>
+                    <div class="drip-container">
+                        <div class="drip drip-1"></div>
+                        <div class="drip drip-2"></div>
+                        <div class="drip drip-3"></div>
+                    </div>
+                    <div class="candle">
+                        <div class="flame" id="cake-candle-flame"></div>
+                    </div>
+                </div>
+                <p class="blow-instruction">(Tap the flame to blow it out and make a wish!)</p>
+            </div>
+            
+            <p class="reveal-description">Today is all about celebrating the amazing person you are.</p>
+            
+            <div class="glowing-heart-wrapper">
+                <div class="glowing-heart"></div>
+            </div>
+            
+            <button id="to-letter-btn" class="glowing-btn">Read My Letter <i class="fas fa-envelope-open-text"></i></button>
+        </div>
+    </section>
+
+    <!-- 8. Birthday Letter with Interactive Cassette Voice Message Player -->
+    <section id="letter-screen" class="screen hidden">
+        <div class="section-wrapper flex-center">
+            <h2 class="section-title handwritten">A Letter to You</h2>
+            
+            <div class="glass-card letter-card">
+                <div class="letter-stamp"><i class="fas fa-heart"></i></div>
+                <div class="letter-body">
+                    <p class="letter-salutation">My Dearest,</p>
+                    
+                    <div class="letter-text-wrapper">
+                        <!-- Editable typed letter placeholder -->
+                        <span id="typed-letter-text" class="letter-paragraph"></span><span class="cursor">|</span>
+                        
+                        <!-- Text loaded into script for typing, customizable -->
+                        <div id="source-letter-text" style="display:none;">To my favorite person,
+
+Happy Birthday! Thank you for walking into my life and filling it with so much joy, smiles, and beautiful memories. You are my rock, my peace, and my happiest place.
+
+I cherish every single day with you and look forward to building our beautiful future together. You deserve the absolute world, and I promise to stand by you through every high and low, forever and always. ❤️</div>
+                    </div>
+                </div>
+            </div>
+            
+
+            
+            <button id="to-reasons-btn" class="glowing-btn hidden-btn">Why You're Amazing <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </section>
+
+    <!-- 9. Reasons Why You're Amazing (Heart clicker board) -->
+    <section id="reasons-screen" class="screen hidden">
+        <div class="section-wrapper">
+            <h2 class="section-title handwritten">Why You're So Amazing</h2>
+            <p class="section-subtitle">Click the golden hearts to reveal why I fell for you.</p>
+            
+            <div class="heart-clicker-board">
+                <!-- Heart 1 -->
+                <div class="interactive-heart-box" data-target="reason-bubble-1">
+                    <div class="interactive-heart"><i class="fas fa-heart"></i></div>
+                    <span class="heart-label">❤️ Your Kindness</span>
+                    <div id="reason-bubble-1" class="reason-text-bubble">
+                        <p>You have the biggest, most compassionate heart. The way you care for others and make everyone feel valued is truly beautiful.</p>
+                    </div>
+                </div>
+                
+                <!-- Heart 2 -->
+                <div class="interactive-heart-box" data-target="reason-bubble-2">
+                    <div class="interactive-heart"><i class="fas fa-heart"></i></div>
+                    <span class="heart-label">😊 Your Smile</span>
+                    <div id="reason-bubble-2" class="reason-text-bubble">
+                        <p>Your smile instantly brightens my darkest days. It's my absolute favorite view in the world and it fills my heart with joy.</p>
+                    </div>
+                </div>
+                
+                <!-- Heart 3 -->
+                <div class="interactive-heart-box" data-target="reason-bubble-3">
+                    <div class="interactive-heart"><i class="fas fa-heart"></i></div>
+                    <span class="heart-label">🌍 Your Support</span>
+                    <div id="reason-bubble-3" class="reason-text-bubble">
+                        <p>You are my rock, always encouraging me to pursue my passions. With you behind me, I feel like I can conquer anything.</p>
+                    </div>
+                </div>
+                
+                <!-- Heart 4 -->
+                <div class="interactive-heart-box" data-target="reason-bubble-4">
+                    <div class="interactive-heart"><i class="fas fa-heart"></i></div>
+                    <span class="heart-label">😂 Your Humor</span>
+                    <div id="reason-bubble-4" class="reason-text-bubble">
+                        <p>Your quick wit and playful sense of humor keep me laughing. Life is never dull when we are sharing inside jokes.</p>
+                    </div>
+                </div>
+                
+                <!-- Heart 5 -->
+                <div class="interactive-heart-box" data-target="reason-bubble-5">
+                    <div class="interactive-heart"><i class="fas fa-heart"></i></div>
+                    <span class="heart-label">✨ Your Dreams</span>
+                    <div id="reason-bubble-5" class="reason-text-bubble">
+                        <p>Your drive, passion, and vision for the future inspire me daily. I love seeing the sparkle in your eyes when you talk about your goals.</p>
+                    </div>
+                </div>
+                
+                <!-- Heart 6 -->
+                <div class="interactive-heart-box" data-target="reason-bubble-6">
+                    <div class="interactive-heart"><i class="fas fa-heart"></i></div>
+                    <span class="heart-label">💕 Everything</span>
+                    <div id="reason-bubble-6" class="reason-text-bubble">
+                        <p>From the little quirks to your biggest achievements, I love every single part of you. You are perfect to me, just the way you are.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="btn-container flex-center">
+                <button id="to-dreams-btn" class="glowing-btn">Take Relationship Quiz <i class="fas fa-question-circle"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 10.5 Relationship Quiz -->
+    <section id="quiz-screen" class="screen hidden">
+        <div class="glass-container quiz-card">
+            <h2 class="section-title handwritten">How Well Do You Know Us?</h2>
+            <p class="section-subtitle">Answer these questions to unlock the final gift box.</p>
+            
+            <div class="quiz-box">
+                <!-- Progress track -->
+                <div class="quiz-header">
+                    <span id="quiz-progress-text">Question 1 of 3</span>
+                    <div class="progress-bar-rail">
+                        <div id="quiz-progress-bar" class="progress-bar-fill" style="width: 33.3%;"></div>
+                    </div>
+                </div>
+                
+                <!-- Question content -->
+                <div class="quiz-content-wrapper">
+                    <h3 id="quiz-question-title" class="quiz-question-title">Where did we go on our first official date?</h3>
+                    <div class="quiz-options-grid" id="quiz-options-box">
+                        <button class="quiz-option-btn">Option A</button>
+                        <button class="quiz-option-btn">Option B</button>
+                        <button class="quiz-option-btn">Option C</button>
+                    </div>
+                    <p id="quiz-feedback-text" class="quiz-feedback"></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 11. Final Surprise (Interactive Gift Box) -->
+    <section id="gift-screen" class="screen hidden">
+        <div class="section-wrapper flex-center">
+            <h2 class="section-title handwritten">A Little Gift For You</h2>
+            <p class="section-subtitle">Click the box to open it.</p>
+            
+            <div class="gift-box-wrapper" id="gift-box-container">
+                <div class="gift-box">
+                    <div class="gift-box-lid"></div>
+                    <div class="gift-box-ribbon-v"></div>
+                    <div class="gift-box-ribbon-h"></div>
+                    <div class="gift-box-bow"></div>
+                    <div class="gift-box-body"></div>
+                </div>
+                
+                <div class="gift-reveal-content hidden">
+                    <div class="reveal-heart-glow">❤️</div>
+                    <h2 class="reveal-message glow-text">I Love You ❤️</h2>
+                    <p class="reveal-subtitle">Happy Birthday, My Favorite Person.</p>
+                </div>
+            </div>
+            
+            <button id="to-ending-btn" class="glowing-btn hidden-btn">Final Words <i class="fas fa-heart"></i></button>
+        </div>
+    </section>
+
+    <!-- 12. Ending Screen -->
+    <section id="ending-screen" class="screen hidden">
+        <div class="glass-container ending-card flex-center">
+            <h2 class="section-title handwritten">Thank You</h2>
+            <p class="ending-paragraph">Thank you for taking this journey with me.</p>
+            <p class="ending-paragraph highlight">May this birthday be the beginning of your happiest year yet.</p>
+            
+            <div class="ending-heart-floating">❤️</div>
+            
+            <button id="replay-btn" class="glowing-btn">
+                Replay the Journey <i class="fas fa-rotate-right"></i>
+            </button>
+        </div>
+    </section>
+    
+    <!-- Hidden Easter Egg Modal Popup -->
+    <div id="easter-egg-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <span class="magic-sparkle">✨</span>
+                <h3>Secret Easter Egg Unlocked!</h3>
+                <button class="close-modal-btn" id="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="floating-modal-hearts">❤️</div>
+                <p id="easter-egg-message">You found a secret star! I love you to the moon and back, to infinity and beyond. 🌟</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Birthday Wish Text Prompt Modal -->
+    <div id="wish-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-card wish-modal-card">
+            <div class="modal-header">
+                <span class="magic-sparkle">🎂</span>
+                <h3>Make a Birthday Wish</h3>
+            </div>
+            <div class="modal-body">
+                <p class="wish-prompt-desc">Close your eyes, think of something special, and write your wish below:</p>
+                <textarea id="wish-input" placeholder="Type your secret birthday wish here..."></textarea>
+                <button id="submit-wish-btn" class="glowing-btn">Send Wish to the Universe 🌟</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full-screen Lightbox Modal overlay -->
+    <div id="lightbox-modal" class="modal-overlay hidden">
+        <button class="close-modal-btn lightbox-close-btn" id="lightbox-close">&times;</button>
+        
+        <button class="lightbox-nav-btn prev-lightbox-btn" id="lightbox-prev"><i class="fas fa-chevron-left"></i></button>
+        
+        <div class="lightbox-content-box">
+            <div class="lightbox-img-frame">
+                <img id="lightbox-img" src="" alt="Enlarged Memory">
+            </div>
+            <div class="lightbox-details glass-card">
+                <h3 id="lightbox-title" contenteditable="true">Title</h3>
+                <span id="lightbox-date">Date</span>
+                <p id="lightbox-desc" contenteditable="true">Description</p>
+            </div>
+        </div>
+        
+        <button class="lightbox-nav-btn next-lightbox-btn" id="lightbox-next"><i class="fas fa-chevron-right"></i></button>
+    </div>
+    
+    <!-- Audio Elements (Synthesizer fallback or drop-in romantic_piano.mp3) -->
+    <audio id="bg-music" loop preload="auto">
+        <source src="assets/romantic_piano.mp3" type="audio/mpeg">
+    </audio>
+
+
+    <!-- JavaScript Files -->
+    <script src="js/script.js?v=1.3"></script>
+</body>
+</html>
