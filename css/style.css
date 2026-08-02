@@ -2812,6 +2812,7 @@ body {
 .welcome-enter-btn.show-btn {
     opacity: 1;
     transform: translateY(0);
+    pointer-events: auto !important;
 }
 
 .welcome-enter-btn:hover {
