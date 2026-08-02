@@ -1872,14 +1872,29 @@ document.addEventListener("DOMContentLoaded", () => {
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance("Happy Birthday, my love!");
             const voices = window.speechSynthesis.getVoices();
-            const preferredVoice = voices.find(voice => 
-                voice.lang.includes('en') && (voice.name.includes('Google') || voice.name.includes('Natural') || voice.name.includes('Premium'))
-            ) || voices.find(voice => voice.lang.includes('en'));
+            
+            // Sweet female voice keywords across Windows, macOS, Chrome, iOS, and Android
+            const femaleKeywords = ['zira', 'samantha', 'google us english', 'google uk english female', 'hazel', 'susan', 'victoria', 'karen', 'female', 'natural'];
+            
+            let preferredVoice = null;
+            for (let keyword of femaleKeywords) {
+                preferredVoice = voices.find(voice => 
+                    voice.lang.includes('en') && 
+                    voice.name.toLowerCase().includes(keyword)
+                );
+                if (preferredVoice) break;
+            }
+            
+            if (!preferredVoice) {
+                preferredVoice = voices.find(voice => voice.lang.includes('en'));
+            }
             
             if (preferredVoice) {
                 utterance.voice = preferredVoice;
             }
-            utterance.pitch = 1.05;
+            
+            // Sweet voice parameters: slightly higher pitch (1.1) and a soft, natural pace (0.85)
+            utterance.pitch = 1.1;
             utterance.rate = 0.85;
             utterance.volume = 1.0;
             window.speechSynthesis.speak(utterance);
@@ -1981,4 +1996,14 @@ document.addEventListener("DOMContentLoaded", () => {
             startLoadingTypewriter();
         });
     });
+
+    // Pre-trigger voice loading for smooth SpeechSynthesis activation
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.getVoices();
+        if (window.speechSynthesis.onvoiceschanged !== undefined) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+            };
+        }
+    }
 });
