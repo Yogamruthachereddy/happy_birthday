@@ -2659,40 +2659,97 @@ body {
 }
 
 @media (max-width: 600px) {
-    /* Collapse book into single page swiper cards on mobile viewports */
+    /* Stack book pages vertically on mobile screens so all spreads are fully visible */
     .book {
-        height: 460px;
-        perspective: none;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1.5rem !important;
+        height: auto !important;
+        min-height: 440px;
+        perspective: none !important;
+        position: relative;
     }
+    
     .page {
-        width: 100%;
-        right: 0;
-        left: 0;
-        transform-origin: center center;
-        transition: opacity 0.5s ease, transform 0.5s ease;
+        position: relative !important;
+        width: 100% !important;
+        height: 420px !important;
+        right: auto !important;
+        left: auto !important;
+        transform: none !important;
+        transition: none !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        display: none !important; /* Hide by default */
     }
-    .page-face {
-        border-radius: 8px !important;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4) !important;
-    }
-    /* Swiping slide animation values */
+    
+    /* Show only the active flipped page (left page / top stack card) */
     .page.flipped {
-        transform: rotateY(0deg) translateX(-100%);
-        opacity: 0;
-        pointer-events: none;
+        display: none !important;
     }
-    .page-back {
-        transform: rotateY(0deg);
-        display: none;
+    
+    .page.flipped:last-of-type {
+        display: block !important;
     }
-    .page.flipped .page-back {
-        display: block;
-        transform: rotateY(0deg);
-        opacity: 1;
+    
+    /* Show only the active unflipped page (right page / bottom stack card) */
+    .page:not(.flipped) {
+        display: block !important;
     }
+    
+    .page:not(.flipped) ~ .page:not(.flipped) {
+        display: none !important;
+    }
+    
+    /* Normalize page-face styles for vertical cards */
+    .page-face {
+        position: absolute !important;
+        width: 100% !important;
+        height: 100% !important;
+        top: 0;
+        left: 0;
+        backface-visibility: visible !important;
+        transform: none !important;
+        border-radius: 12px !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45) !important;
+    }
+    
+    /* Flipped page shows back face (memory page) and hides cover/front */
+    .page.flipped:last-of-type .page-front {
+        display: none !important;
+    }
+    
+    .page.flipped:last-of-type .page-back {
+        display: block !important;
+    }
+    
+    /* Unflipped page shows front face (memory page) and hides back */
+    .page:not(.flipped) .page-front {
+        display: block !important;
+    }
+    
+    .page:not(.flipped) .page-back {
+        display: none !important;
+    }
+    
+    /* Position the pagination buttons cleanly beneath the vertical cards */
     .prev-page-btn, .next-page-btn {
-        width: 44px;
-        height: 44px;
+        width: 46px !important;
+        height: 46px !important;
+        position: absolute !important;
+        bottom: -75px !important;
+    }
+    
+    .prev-page-btn {
+        left: 20% !important;
+    }
+    
+    .next-page-btn {
+        right: 20% !important;
+    }
+    
+    .scrapbook-album-container {
+        padding-bottom: 95px !important;
     }
 }
 
