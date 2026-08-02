@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const TARGET_BIRTHDAY_STR = "2026-07-30T00:00:00"; 
     
     // Passcode to unlock the padlock (Format: uppercase for comparison)
-    const SECRET_PASSCODE = "LOVE";
+    const SECRET_PASSCODE = "KALYAN";
     const ALT_PASSCODE = "0729"; // Anniversary date MMDD
     const NICKNAME_PASSCODE = "MY LOVE";
 
