@@ -840,7 +840,10 @@ document.addEventListener("DOMContentLoaded", () => {
                             // Show enter button after welcome text flows
                             const enterBtn = document.getElementById("enter-vault-btn");
                             setTimeout(() => {
-                                if (enterBtn) enterBtn.classList.add("show-btn");
+                                if (enterBtn) {
+                                    enterBtn.classList.remove("hidden-btn");
+                                    enterBtn.classList.add("show-btn");
+                                }
                             }, 4500);
                         });
                     }, 800);
@@ -1952,6 +1955,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const enterBtn = document.getElementById("enter-vault-btn");
         if (enterBtn) {
             enterBtn.classList.remove("show-btn");
+            enterBtn.classList.add("hidden-btn");
         }
         
         // Reset Scrapbook Pages flip

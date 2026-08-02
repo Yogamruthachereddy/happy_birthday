@@ -317,6 +317,7 @@ body {
     opacity: 0;
     pointer-events: none;
     visibility: hidden;
+    display: none !important;
 }
 
 .loader-content {
