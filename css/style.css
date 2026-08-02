@@ -2695,3 +2695,281 @@ body {
         height: 44px;
     }
 }
+
+/* -------------------------------------------------------------------------
+   Cinematic Intro & Vault Screens Styles
+   ------------------------------------------------------------------------- */
+#cinematic-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at center, #0f1026 0%, #030408 100%);
+    transition: opacity 1.5s ease;
+}
+
+/* Loading & Welcome Layouts */
+.cinematic-loader-container,
+.welcome-container,
+.vault-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.cinematic-loading-text {
+    font-family: var(--font-primary);
+    font-size: 1.15rem;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 0 15px rgba(255, 107, 139, 0.6);
+    margin: 0;
+    position: relative;
+    display: inline-block;
+}
+
+.cinematic-loading-text::after {
+    content: '|';
+    animation: caretBlink 0.8s infinite;
+    margin-left: 3px;
+    color: var(--accent-pink);
+}
+
+@keyframes caretBlink {
+    50% { opacity: 0; }
+}
+
+/* Welcome Screen */
+.welcome-title {
+    font-family: var(--font-serif);
+    font-size: 2.8rem;
+    font-weight: 300;
+    margin-bottom: 2rem;
+    background: linear-gradient(to right, #ffffff 10%, #ffb6c1 50%, #d4af37 90%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(20px);
+    animation: fadeInBlur 1.5s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
+}
+
+.welcome-msg {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0.8rem 0;
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(15px);
+}
+
+.welcome-fade-1 { animation: fadeInBlur 1.5s cubic-bezier(0.1, 0.8, 0.2, 1) 0.8s forwards; }
+.welcome-fade-2 { animation: fadeInBlur 1.5s cubic-bezier(0.1, 0.8, 0.2, 1) 2.2s forwards; }
+.welcome-fade-3 { animation: fadeInBlur 1.5s cubic-bezier(0.1, 0.8, 0.2, 1) 3.6s forwards; }
+
+@keyframes fadeInBlur {
+    to {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateY(0);
+    }
+}
+
+.welcome-enter-btn {
+    margin-top: 3rem;
+    padding: 0.9rem 2.2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 30px;
+    color: #ffffff;
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.welcome-enter-btn.show-btn {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.welcome-enter-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 107, 139, 0.4);
+    box-shadow: 0 0 25px rgba(255, 107, 139, 0.25);
+    transform: scale(1.05);
+}
+
+/* Vault Passcode Screen */
+.vault-container {
+    max-width: 480px;
+}
+
+.crystal-heart-wrapper {
+    width: 140px;
+    height: 140px;
+    margin-bottom: 2.2rem;
+    position: relative;
+    cursor: pointer;
+    perspective: 800px;
+}
+
+.crystal-heart-svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 20px rgba(255, 107, 139, 0.35));
+    animation: heartFloat 5s ease-in-out infinite, heartBreathe 2s ease-in-out infinite alternate;
+}
+
+.heart-facets polygon {
+    transition: all 0.4s ease;
+}
+
+.crystal-heart-wrapper:hover .heart-facets polygon {
+    filter: brightness(1.15) saturate(1.1);
+}
+
+@keyframes heartFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(1deg); }
+}
+
+@keyframes heartBreathe {
+    0% { transform: scale(0.96); filter: drop-shadow(0 0 15px rgba(255, 107, 139, 0.3)); }
+    100% { transform: scale(1.04); filter: drop-shadow(0 0 28px rgba(255, 107, 139, 0.6)); }
+}
+
+.heart-aura {
+    animation: auraPulse 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes auraPulse {
+    0% { r: 35px; opacity: 0.4; }
+    100% { r: 48px; opacity: 0.95; }
+}
+
+#vault-card {
+    width: 100%;
+    padding: 2.2rem;
+    background: rgba(15, 16, 32, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 16px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    transform: translateY(30px);
+    opacity: 0;
+    animation: vaultCardSlideIn 1.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0.5s forwards;
+}
+
+@keyframes vaultCardSlideIn {
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.vault-unlock-btn {
+    width: 100%;
+    padding: 1rem 1.8rem;
+    background: linear-gradient(135deg, rgba(255, 107, 139, 0.15) 0%, rgba(138, 43, 226, 0.15) 100%);
+    border: 1px solid rgba(255, 107, 139, 0.35);
+    border-radius: 30px;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.vault-unlock-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+    transition: 0.5s;
+}
+
+.vault-unlock-btn:hover::before {
+    left: 100%;
+    transition: 0.8s ease-in-out;
+}
+
+.vault-unlock-btn:hover {
+    background: linear-gradient(135deg, rgba(255, 107, 139, 0.3) 0%, rgba(138, 43, 226, 0.3) 100%);
+    border-color: rgba(255, 107, 139, 0.75);
+    box-shadow: 0 0 30px rgba(255, 107, 139, 0.35);
+    transform: scale(1.02);
+}
+
+/* Card error shake */
+.shake-card {
+    animation: vaultShake 0.4s ease;
+}
+
+@keyframes vaultShake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+}
+
+/* Scanning / Verifying status class */
+.scan-glow {
+    position: relative;
+}
+
+.scan-glow::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 107, 139, 0.8);
+    box-shadow: 0 0 15px rgba(255, 107, 139, 0.8);
+    animation: scanBar 1.6s ease-in-out infinite;
+}
+
+@keyframes scanBar {
+    0% { top: 0%; opacity: 0.3; }
+    50% { top: 100%; opacity: 1; }
+    100% { top: 0%; opacity: 0.3; }
+}
+
+/* Open doors animation logic */
+.vault-open-out {
+    animation: vaultDoorsOpen 1.8s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+}
+
+@keyframes vaultDoorsOpen {
+    0% { transform: scale(1); opacity: 1; filter: blur(0); }
+    100% { transform: scale(1.3); opacity: 0; filter: blur(15px); pointer-events: none; }
+}

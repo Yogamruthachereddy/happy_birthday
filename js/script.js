@@ -648,15 +648,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // -------------------------------------------------------------------------
     const screens = {
         LOADING: "loading-screen",
-        LANDING: "landing-screen",
+        WELCOME: "welcome-screen",
         UNLOCK: "unlock-screen",
         MEMORIES: "memories-screen",
-        LOVE_NOTES: "love-notes-screen",
         COUNTDOWN: "countdown-screen",
         REVEAL: "reveal-screen",
         LETTER: "letter-screen",
         REASONS: "reasons-screen",
-        DREAMS: "dreams-screen",
         QUIZ: "quiz-screen",
         GIFT: "gift-screen",
         ENDING: "ending-screen"
@@ -693,168 +691,427 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // -------------------------------------------------------------------------
-    // 7. Loading Screen Logic
+    // 7. Cinematic Background Particle Canvas
     // -------------------------------------------------------------------------
-    const loadingQuotes = [
-        "Unlocking beautiful memories...",
-        "Gathering floating stars...",
-        "Preparing the magic...",
-        "Polishing golden sparkles...",
-        "Crafting a romantic escape..."
-    ];
+    const canvas = document.getElementById("cinematic-canvas");
+    const ctx = canvas ? canvas.getContext("2d") : null;
     
-    let quoteIndex = 0;
+    let canvasWidth = 0;
+    let canvasHeight = 0;
+    let particles = [];
+    let particleState = 'ambient'; // 'ambient', 'gather', 'explode', 'scatter'
+    const particleCount = 130;
+
+    if (canvas && ctx) {
+        canvasWidth = canvas.width = window.innerWidth;
+        canvasHeight = canvas.height = window.innerHeight;
+        
+        window.addEventListener("resize", () => {
+            canvasWidth = canvas.width = window.innerWidth;
+            canvasHeight = canvas.height = window.innerHeight;
+        });
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvasWidth;
+                this.y = Math.random() * canvasHeight;
+                this.vx = Math.random() * 0.8 - 0.4;
+                this.vy = Math.random() * 0.8 - 0.4;
+                this.radius = Math.random() * 2 + 0.5;
+                this.alpha = Math.random() * 0.5 + 0.25;
+                this.color = `hsla(${260 + Math.random() * 85}, 70%, 75%, ${this.alpha})`;
+                this.originalAlpha = this.alpha;
+                this.isTwinkle = Math.random() < 0.25;
+                this.twinkleSpeed = Math.random() * 0.015 + 0.005;
+            }
+
+            update(state, targetPos) {
+                if (state === 'gather' && targetPos) {
+                    const dx = targetPos.x - this.x;
+                    const dy = targetPos.y - this.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist > 2) {
+                        this.vx += (dx / dist) * 0.35;
+                        this.vy += (dy / dist) * 0.35;
+                        this.vx *= 0.82;
+                        this.vy *= 0.82;
+                    }
+                } else if (state === 'explode' && targetPos) {
+                    const dx = this.x - targetPos.x;
+                    const dy = this.y - targetPos.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                    this.vx = (dx / dist) * (Math.random() * 9 + 6);
+                    this.vy = (dy / dist) * (Math.random() * 9 + 6);
+                    this.alpha = 1;
+                } else if (state === 'scatter') {
+                    this.vx *= 0.96;
+                    this.vy *= 0.96;
+                } else {
+                    // normal drift
+                    if (Math.random() < 0.005) {
+                        this.vx = Math.random() * 0.8 - 0.4;
+                        this.vy = Math.random() * 0.8 - 0.4;
+                    }
+                }
+
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (state === 'ambient') {
+                    if (this.x < 0) this.x = canvasWidth;
+                    if (this.x > canvasWidth) this.x = 0;
+                    if (this.y < 0) this.y = canvasHeight;
+                    if (this.y > canvasHeight) this.y = 0;
+                }
+
+                if (this.isTwinkle && state !== 'explode') {
+                    this.alpha += this.twinkleSpeed;
+                    if (this.alpha > 0.85 || this.alpha < 0.15) {
+                        this.twinkleSpeed = -this.twinkleSpeed;
+                    }
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color.replace(`${this.originalAlpha}`, `${this.alpha}`);
+                ctx.shadowBlur = this.radius * 3;
+                ctx.shadowColor = this.color;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+            
+            const heartEl = document.getElementById("crystal-heart");
+            let targetPos = { x: canvasWidth / 2, y: canvasHeight / 2 };
+            if (heartEl) {
+                const rect = heartEl.getBoundingClientRect();
+                targetPos = {
+                    x: rect.left + rect.width / 2,
+                    y: rect.top + rect.height / 2
+                };
+            }
+            
+            particles.forEach(p => {
+                p.update(particleState, targetPos);
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+    }
+
+    // -------------------------------------------------------------------------
+    // 7.5 Loading Sequence Typewriter & Welcome Flow
+    // -------------------------------------------------------------------------
     const loadingText = document.getElementById("loading-text");
     
-    const quoteInterval = setInterval(() => {
-        quoteIndex = (quoteIndex + 1) % loadingQuotes.length;
-        if (loadingText) {
-            loadingText.style.opacity = 0;
-            setTimeout(() => {
-                loadingText.textContent = loadingQuotes[quoteIndex];
-                loadingText.style.opacity = 1;
-            }, 300);
-        }
-    }, 1500);
-
-    setTimeout(() => {
-        clearInterval(quoteInterval);
-        transitionTo(screens.LANDING, () => {
-            const landingTextEl = document.querySelector(".typewriter-text");
-            if (landingTextEl) {
-                landingTextEl.style.borderRight = "2px solid var(--accent-pink)";
-                landingTextEl.style.whiteSpace = "normal";
-            }
-            initBirthdayCountdown();
-        });
-    }, 3500);
-
-    // -------------------------------------------------------------------------
-    // 8. Live Countdown Clock to Birthday
-    // -------------------------------------------------------------------------
-    let countdownTimerInterval = null;
-    let isCountdownFinished = false;
-    const targetBirthdayDate = new Date(TARGET_BIRTHDAY_STR);
-    
-    const daysSpan = document.getElementById("days");
-    const hoursSpan = document.getElementById("hours");
-    const minutesSpan = document.getElementById("minutes");
-    const secondsSpan = document.getElementById("seconds");
-    const bypassBtn = document.getElementById("bypass-countdown");
-    const startBtn = document.getElementById("start-journey-btn");
-
-    function initBirthdayCountdown() {
-        updateClock();
-        countdownTimerInterval = setInterval(updateClock, 1000);
-    }
-
-    function updateClock() {
-        const now = new Date();
-        const difference = targetBirthdayDate - now;
-
-        if (difference <= 0 || isCountdownFinished) {
-            clearInterval(countdownTimerInterval);
-            isCountdownFinished = true;
-            
-            const countdownBox = document.getElementById("bday-countdown-box");
-            if (countdownBox) {
-                countdownBox.innerHTML = `
-                    <p class="countdown-label" style="color:var(--accent-gold); font-size: 1.25rem;">
-                        🎂 The Special Day is Here! 🎂
-                    </p>
-                    <p style="font-style:italic; margin-top:0.5rem; color:var(--text-muted);">
-                        Unlocking your birthday surprise journey...
-                    </p>
-                `;
-            }
-            startBtn.style.display = "inline-flex";
-            startBtn.classList.add("visible-btn");
-            return;
-        }
-
-        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-        const minutes = Math.floor((difference / 1000 / 60) % 60);
-        const seconds = Math.floor((difference / 1000) % 60);
-
-        if (daysSpan) daysSpan.textContent = String(days).padStart(2, '0');
-        if (hoursSpan) hoursSpan.textContent = String(hours).padStart(2, '0');
-        if (minutesSpan) minutesSpan.textContent = String(minutes).padStart(2, '0');
-        if (secondsSpan) secondsSpan.textContent = String(seconds).padStart(2, '0');
+    function startLoadingTypewriter() {
+        if (!loadingText) return;
         
-        startBtn.style.display = "none";
+        const phrase = "Loading something made with love...";
+        loadingText.textContent = "";
+        let idx = 0;
+
+        function typeChar() {
+            if (idx < phrase.length) {
+                loadingText.textContent += phrase.charAt(idx);
+                idx++;
+                setTimeout(typeChar, 70);
+            } else {
+                // Heartbeat thump at load finish
+                setTimeout(() => {
+                    particleState = 'gather';
+                    setTimeout(() => {
+                        transitionTo(screens.WELCOME, () => {
+                            particleState = 'ambient';
+                            // Show enter button after welcome text flows
+                            const enterBtn = document.getElementById("enter-vault-btn");
+                            setTimeout(() => {
+                                if (enterBtn) enterBtn.classList.add("show-btn");
+                            }, 4500);
+                        });
+                    }, 800);
+                }, 1000);
+            }
+        }
+        
+        setTimeout(typeChar, 800);
     }
 
-    if (bypassBtn) {
-        bypassBtn.addEventListener("click", () => {
-            playSound('success-bell');
-            isCountdownFinished = true;
-            updateClock();
+    // Run loader
+    startLoadingTypewriter();
+
+    // -------------------------------------------------------------------------
+    // 8. Audio Synthesizer Heartbeat & Ambient Drone Loop
+    // -------------------------------------------------------------------------
+    let ambientDrone = null;
+    let heartbeatTimer = null;
+
+    function startCinematicAudio() {
+        initAudioContext();
+        if (!audioCtx) return;
+        
+        // Soft ambient drone chords (C-Major-7th/G)
+        const droneGroup = [];
+        const freqs = [65.41, 130.81, 196.00, 261.63, 329.63]; // C2, C3, G3, C4, E4
+        
+        freqs.forEach((freq, idx) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.02, audioCtx.currentTime + 4.0);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            droneGroup.push({ osc, gain });
+        });
+        
+        // Twinkling stars crystal bells melody
+        const melodyInterval = setInterval(() => {
+            if (!audioCtx) return;
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            const notes = [523.25, 587.33, 659.25, 783.99, 880.00]; // Pentatonic melody
+            const randomNote = notes[Math.floor(Math.random() * notes.length)];
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(randomNote, now);
+            
+            gain.gain.setValueAtTime(0, now);
+            gain.gain.linearRampToValueAtTime(0.015, now + 0.4);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 2.5);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 2.5);
+        }, 3600);
+        
+        // Lub-Dub Double Heartbeat thumps
+        function playDoubleThump() {
+            if (!audioCtx) return;
+            const now = audioCtx.currentTime;
+            
+            // Lub
+            const osc1 = audioCtx.createOscillator();
+            const gain1 = audioCtx.createGain();
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(60, now);
+            osc1.frequency.exponentialRampToValueAtTime(10, now + 0.16);
+            gain1.gain.setValueAtTime(0.4, now);
+            gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+            osc1.connect(gain1);
+            gain1.connect(audioCtx.destination);
+            osc1.start(now);
+            osc1.stop(now + 0.16);
+            
+            // Dub
+            setTimeout(() => {
+                if (!audioCtx) return;
+                const nowDub = audioCtx.currentTime;
+                const osc2 = audioCtx.createOscillator();
+                const gain2 = audioCtx.createGain();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(54, nowDub);
+                osc2.frequency.exponentialRampToValueAtTime(10, nowDub + 0.18);
+                gain2.gain.setValueAtTime(0.28, nowDub);
+                gain2.gain.exponentialRampToValueAtTime(0.001, nowDub + 0.18);
+                osc2.connect(gain2);
+                gain2.connect(audioCtx.destination);
+                osc2.start(nowDub);
+                osc2.stop(nowDub + 0.18);
+            }, 260);
+        }
+        
+        playDoubleThump();
+        heartbeatTimer = setInterval(playDoubleThump, 1300);
+        
+        ambientDrone = {
+            stop: () => {
+                clearInterval(melodyInterval);
+                clearInterval(heartbeatTimer);
+                droneGroup.forEach(d => {
+                    try {
+                        d.gain.gain.setValueAtTime(d.gain.gain.value, audioCtx.currentTime);
+                        d.gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5);
+                        setTimeout(() => d.osc.stop(), 1600);
+                    } catch (e) {}
+                });
+            }
+        };
+    }
+
+    const enterVaultBtn = document.getElementById("enter-vault-btn");
+    if (enterVaultBtn) {
+        enterVaultBtn.addEventListener("click", () => {
+            playSound('click');
+            startCinematicAudio();
+            transitionTo(screens.UNLOCK);
         });
     }
-
-    startBtn.addEventListener("click", () => {
-        playSound('click');
-        initAudioContext();
-        toggleMusic(true);
-        transitionTo(screens.UNLOCK);
-    });
 
     // -------------------------------------------------------------------------
     // 9. Passcode Gate lock Card
     // -------------------------------------------------------------------------
     const unlockBtn = document.getElementById("unlock-btn");
-    const padlock = document.getElementById("main-padlock");
+    const vaultCard = document.getElementById("vault-card");
     const passcodeField = document.getElementById("passcode-input");
     const errorTextEl = document.getElementById("unlock-error-msg");
     let isUnlocked = false;
+
+    if (passcodeField) {
+        passcodeField.addEventListener("input", () => {
+            const heartSvg = document.getElementById("crystal-heart");
+            if (heartSvg) {
+                if (passcodeField.value.length > 0) {
+                    heartSvg.style.animation = "heartFloat 2s ease-in-out infinite, heartBreathe 0.7s ease-in-out infinite alternate";
+                } else {
+                    heartSvg.style.animation = "heartFloat 5s ease-in-out infinite, heartBreathe 2s ease-in-out infinite alternate";
+                }
+            }
+        });
+    }
 
     function handleUnlock() {
         if (isUnlocked) return;
         
         const userInput = passcodeField.value.trim().toUpperCase();
         
-        if (userInput === SECRET_PASSCODE || userInput === ALT_PASSCODE || userInput === NICKNAME_PASSCODE.toUpperCase()) {
-            isUnlocked = true;
-            errorTextEl.textContent = "";
-            padlock.classList.add("unlock-glow");
-            playSound('lock-click');
-            
-            setTimeout(() => {
-                padlock.classList.add("unlocked");
-                playSound('lock-open');
-            }, 500);
-            
-            setTimeout(() => {
-                for (let i = 0; i < 20; i++) {
-                    const rect = padlock.getBoundingClientRect();
-                    const heart = new HeartParticle(rect.left + rect.width/2, rect.top + rect.height/2);
-                    heart.speedX = Math.random() * 8 - 4;
-                    heart.speedY = Math.random() * -10 - 2;
-                    heart.size = Math.random() * 15 + 10;
-                    heartParticles.push(heart);
-                }
-            }, 800);
-            
-            setTimeout(() => {
-                transitionTo(screens.MEMORIES, () => {
-                    initScrapbookAlbum();
-                });
-            }, 2200);
-        } else {
+        if (userInput === "") {
             playSound('error-buzzer');
-            padlock.classList.add("shake-error");
-            errorTextEl.textContent = "Oops! That's not the secret password. Try again!";
-            passcodeField.value = "";
-            passcodeField.focus();
-            
+            if (vaultCard) vaultCard.classList.add("shake-card");
+            errorTextEl.textContent = "Please enter the secret password first!";
             setTimeout(() => {
-                padlock.classList.remove("shake-error");
+                if (vaultCard) vaultCard.classList.remove("shake-card");
             }, 500);
+            return;
         }
+        
+        // Enable scanning/verifying state
+        passcodeField.disabled = true;
+        unlockBtn.disabled = true;
+        if (vaultCard) vaultCard.classList.add("scan-glow");
+        unlockBtn.textContent = "Verifying...";
+        
+        // Play verification hum sound
+        let verifyOsc = null;
+        if (audioCtx) {
+            verifyOsc = audioCtx.createOscillator();
+            const verifyGain = audioCtx.createGain();
+            verifyOsc.type = 'sawtooth';
+            verifyOsc.frequency.setValueAtTime(200, audioCtx.currentTime);
+            verifyOsc.frequency.linearRampToValueAtTime(320, audioCtx.currentTime + 1.5);
+            verifyGain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+            verifyOsc.connect(verifyGain);
+            verifyGain.connect(audioCtx.destination);
+            verifyOsc.start();
+        }
+        
+        setTimeout(() => {
+            if (verifyOsc) {
+                try { verifyOsc.stop(); } catch(e) {}
+            }
+            
+            if (userInput === SECRET_PASSCODE || userInput === ALT_PASSCODE || userInput === NICKNAME_PASSCODE.toUpperCase()) {
+                isUnlocked = true;
+                errorTextEl.textContent = "";
+                
+                // Stop loop audio
+                if (ambientDrone) ambientDrone.stop();
+                
+                // Crystal heart unlocks (golden light glow)
+                const heartSvg = document.getElementById("crystal-heart");
+                if (heartSvg) {
+                    heartSvg.style.animation = "none";
+                    heartSvg.style.transform = "scale(1.28)";
+                    heartSvg.style.filter = "drop-shadow(0 0 50px #ffd700)";
+                    
+                    const polygons = heartSvg.querySelectorAll("polygon");
+                    polygons.forEach((poly, idx) => {
+                        poly.style.fill = `url(#crystal-facet-${(idx % 3) + 1})`;
+                        poly.style.filter = "brightness(1.4) saturate(1.4)";
+                    });
+                }
+                
+                unlockBtn.textContent = "Access Granted";
+                unlockBtn.style.background = "linear-gradient(135deg, #ffd700 0%, #ff8c00 100%)";
+                unlockBtn.style.borderColor = "#ffd700";
+                
+                playSound('success-bell');
+                
+                // Explode canvas particles outwards
+                particleState = 'explode';
+                setTimeout(() => {
+                    particleState = 'scatter';
+                }, 160);
+                
+                // Animate doors opening
+                const unlockScreen = document.getElementById("unlock-screen");
+                if (unlockScreen) {
+                    unlockScreen.classList.add("vault-open-out");
+                }
+                
+                setTimeout(() => {
+                    transitionTo(screens.MEMORIES, () => {
+                        initScrapbookAlbum();
+                    });
+                }, 1800);
+            } else {
+                // Incorrect passcode shake
+                playSound('error-buzzer');
+                if (vaultCard) {
+                    vaultCard.classList.remove("scan-glow");
+                    vaultCard.classList.add("shake-card");
+                }
+                
+                const heartSvg = document.getElementById("crystal-heart");
+                if (heartSvg) {
+                    heartSvg.style.filter = "drop-shadow(0 0 45px #ff3333)";
+                }
+                
+                unlockBtn.textContent = "That's not the right key...";
+                unlockBtn.style.background = "linear-gradient(135deg, #ff3333 0%, #990000 100%)";
+                unlockBtn.style.borderColor = "#ff3333";
+                
+                setTimeout(() => {
+                    if (vaultCard) vaultCard.classList.remove("shake-card");
+                    if (heartSvg) heartSvg.style.filter = "";
+                    
+                    unlockBtn.textContent = "❤️ Unlock Our Story ❤️";
+                    unlockBtn.style.background = "";
+                    unlockBtn.style.borderColor = "";
+                    
+                    passcodeField.disabled = false;
+                    unlockBtn.disabled = false;
+                    passcodeField.value = "";
+                    passcodeField.focus();
+                }, 1800);
+            }
+        }, 1500);
     }
 
-    unlockBtn.addEventListener("click", handleUnlock);
+    if (unlockBtn) {
+        unlockBtn.addEventListener("click", handleUnlock);
+    }
     
     if (passcodeField) {
         passcodeField.addEventListener("keypress", (e) => {
@@ -863,19 +1120,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-
-    padlock.addEventListener("click", () => {
-        if (passcodeField.value !== "") {
-            handleUnlock();
-        } else {
-            playSound('error-buzzer');
-            padlock.classList.add("shake-error");
-            errorTextEl.textContent = "Please enter the secret password first!";
-            setTimeout(() => {
-                padlock.classList.remove("shake-error");
-            }, 500);
-        }
-    });
 
     // -------------------------------------------------------------------------
     // 10. 3D Page-Turning Scrapbook Album & Fullscreen Lightbox
@@ -1626,21 +1870,59 @@ document.addEventListener("DOMContentLoaded", () => {
         playSound('click');
         
         isUnlocked = false;
-        padlock.classList.remove("unlocked", "unlock-glow");
-        passcodeField.value = "";
-        errorTextEl.textContent = "";
+        
+        // Reset passcode inputs
+        if (passcodeField) {
+            passcodeField.value = "";
+            passcodeField.disabled = false;
+        }
+        if (unlockBtn) {
+            unlockBtn.disabled = false;
+            unlockBtn.textContent = "❤️ Unlock Our Story ❤️";
+            unlockBtn.style.background = "";
+            unlockBtn.style.borderColor = "";
+        }
+        if (vaultCard) {
+            vaultCard.classList.remove("scan-glow", "shake-card");
+        }
+        if (errorTextEl) {
+            errorTextEl.textContent = "";
+        }
+        
+        // Reset crystal heart styles
+        const heartSvg = document.getElementById("crystal-heart");
+        if (heartSvg) {
+            heartSvg.style.animation = "";
+            heartSvg.style.transform = "";
+            heartSvg.style.filter = "";
+            const polygons = heartSvg.querySelectorAll("polygon");
+            polygons.forEach(poly => {
+                poly.style.fill = "";
+                poly.style.filter = "";
+            });
+        }
+        
+        // Remove vault open animation
+        const unlockScreen = document.getElementById("unlock-screen");
+        if (unlockScreen) {
+            unlockScreen.classList.remove("vault-open-out");
+        }
+        
+        // Reset enter button visual
+        const enterBtn = document.getElementById("enter-vault-btn");
+        if (enterBtn) {
+            enterBtn.classList.remove("show-btn");
+        }
         
         // Reset Scrapbook Pages flip
         bookPages.forEach(p => p.classList.remove("flipped"));
         currentBookPage = 0;
         updateBookNavigation();
         
-        // Reset love notes (Removed)
-        
         // Reset countdown screen
         countdownNumber.style.display = 'block';
         const countdownScreen = document.getElementById("countdown-screen");
-        countdownScreen.classList.remove("dark-black-out");
+        if (countdownScreen) countdownScreen.classList.remove("dark-black-out");
         
         // Reset letter typing
         const typingLetterText = document.getElementById("typed-letter-text");
@@ -1654,8 +1936,6 @@ document.addEventListener("DOMContentLoaded", () => {
         
         document.getElementById("to-reasons-btn").classList.add("hidden-btn");
         document.getElementById("to-reasons-btn").classList.remove("visible-btn");
-        
-        // Reset constellation dreams (Dreams page removed)
         
         // Reset wishing candle blowout
         flame.classList.remove("extinguished");
@@ -1671,9 +1951,9 @@ document.addEventListener("DOMContentLoaded", () => {
         toEndingBtn.classList.add("hidden-btn");
         toEndingBtn.classList.remove("visible-btn");
         
-        // Go back to Landing screen
-        transitionTo(screens.LANDING, () => {
-            initBirthdayCountdown();
+        // Go back to Loading screen and restart typewriter
+        transitionTo(screens.LOADING, () => {
+            startLoadingTypewriter();
         });
     });
 });

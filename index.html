@@ -36,65 +36,76 @@
         </span>
     </button>
 
+    <!-- Cinematic Background Canvas -->
+    <canvas id="cinematic-canvas"></canvas>
+
     <!-- 1. Elegant Loading Screen -->
     <section id="loading-screen" class="active-screen">
-        <div class="loader-content">
-            <div class="loader-ring"></div>
-            <div class="loader-heart"><i class="fas fa-heart"></i></div>
-            <p id="loading-text" class="loading-quote">Preparing something beautiful...</p>
+        <div class="cinematic-loader-container">
+            <p id="loading-text" class="cinematic-loading-text"></p>
         </div>
     </section>
 
-    <!-- 2. Landing Screen with Live Birthday Countdown -->
-    <section id="landing-screen" class="screen hidden">
-        <div class="glass-container landing-card">
-            <span class="magic-sparkle">✨</span>
-            <h1 class="elegant-title typewriter-text">Someone special has something waiting for you...</h1>
-            <p class="romantic-subtitle">This surprise was made with lots of love.</p>
-            
-            <!-- Live Countdown Timer -->
-            <div class="birthday-countdown-container" id="bday-countdown-box">
-                <p class="countdown-label"><i class="far fa-clock"></i> Counting down to your special day...</p>
-                <div class="countdown-timer-grid">
-                    <div class="timer-unit"><span id="days">00</span><label>Days</label></div>
-                    <div class="timer-unit"><span id="hours">00</span><label>Hours</label></div>
-                    <div class="timer-unit"><span id="minutes">00</span><label>Mins</label></div>
-                    <div class="timer-unit"><span id="seconds">00</span><label>Secs</label></div>
-                </div>
-                <button id="bypass-countdown" class="bypass-link">(Bypass Countdown for Testing)</button>
-            </div>
-            
-            <button id="start-journey-btn" class="glowing-btn">
-                Begin the Journey <span class="heart-pulse">❤️</span>
+    <!-- 2. Cinematic Welcome Screen -->
+    <section id="welcome-screen" class="screen hidden">
+        <div class="welcome-container">
+            <h1 class="welcome-title text-glow">✨ A Private Journey ✨</h1>
+            <p class="welcome-msg welcome-fade-1">This experience is meant for one very special person.</p>
+            <p class="welcome-msg welcome-fade-2">If this link has found you...</p>
+            <p class="welcome-msg welcome-fade-3">...then it was always meant for you.</p>
+            <button id="enter-vault-btn" class="welcome-enter-btn hidden-btn">
+                Enter the Vault <i class="fas fa-arrow-right"></i>
             </button>
         </div>
     </section>
 
-    <!-- 3. Unlock the Surprise (with custom passcode field) -->
+    <!-- 3. Secret Vault (Passcode Entry) -->
     <section id="unlock-screen" class="screen hidden">
-        <div class="glass-container lock-card">
-            <h2 class="section-title">Unlock the Surprise</h2>
-            <p class="lock-instruction">Only someone very special can unlock this.</p>
+        <div class="vault-container">
+            <div class="crystal-heart-wrapper" id="heart-wrapper">
+                <svg viewBox="0 0 100 100" class="crystal-heart-svg" id="crystal-heart">
+                    <defs>
+                        <radialGradient id="crystal-glow" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="rgba(255, 107, 139, 0.7)" />
+                            <stop offset="100%" stop-color="rgba(15, 12, 30, 0)" />
+                        </radialGradient>
+                        <linearGradient id="crystal-facet-1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#ffb6c1" stop-opacity="0.9" />
+                            <stop offset="100%" stop-color="#ff69b4" stop-opacity="0.4" />
+                        </linearGradient>
+                        <linearGradient id="crystal-facet-2" x1="100%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+                            <stop offset="100%" stop-color="#da70d6" stop-opacity="0.4" />
+                        </linearGradient>
+                        <linearGradient id="crystal-facet-3" x1="0%" y1="100%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#8a2be2" stop-opacity="0.8" />
+                            <stop offset="100%" stop-color="#ff69b4" stop-opacity="0.3" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="50" cy="50" r="45" fill="url(#crystal-glow)" class="heart-aura" />
+                    <g class="heart-facets">
+                        <polygon points="50,30 30,15 15,25 15,45 50,78" fill="url(#crystal-facet-1)" />
+                        <polygon points="50,30 70,15 85,25 85,45 50,78" fill="url(#crystal-facet-2)" />
+                        <polygon points="50,30 35,48 50,78" fill="url(#crystal-facet-3)" />
+                        <polygon points="50,30 65,48 50,78" fill="url(#crystal-facet-2)" />
+                        <polygon points="15,25 30,15 35,48 15,45" fill="url(#crystal-facet-3)" opacity="0.65" />
+                        <polygon points="85,25 70,15 65,48 85,45" fill="url(#crystal-facet-1)" opacity="0.65" />
+                    </g>
+                </svg>
+            </div>
             
-            <div class="lock-wrapper">
-                <div class="padlock" id="main-padlock">
-                    <div class="shackle"></div>
-                    <div class="body">
-                        <div class="keyhole"></div>
-                    </div>
+            <div class="glass-container lock-card" id="vault-card">
+                <p class="lock-instruction">This memory collection is protected.</p>
+                
+                <div class="passcode-input-wrapper">
+                    <input type="text" id="passcode-input" placeholder="Enter the Secret Password" autocomplete="off">
+                    <p id="unlock-error-msg" class="error-msg-text"></p>
                 </div>
+                
+                <button id="unlock-btn" class="vault-unlock-btn">
+                    ❤️ Unlock Our Story ❤️
+                </button>
             </div>
-
-            <!-- Passcode Entry Form -->
-            <div class="passcode-input-wrapper">
-                <input type="text" id="passcode-input" placeholder="Type secret password or nickname..." autocomplete="off">
-                <p class="passcode-hint"><i class="fas fa-info-circle"></i> Hint: The word is "LOVE" (or try your nickname) ❤️</p>
-                <p id="unlock-error-msg" class="error-msg-text"></p>
-            </div>
-            
-            <button id="unlock-btn" class="glowing-btn">
-                Unlock <i class="fas fa-key"></i>
-            </button>
         </div>
     </section>
 
