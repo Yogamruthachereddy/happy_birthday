@@ -1412,7 +1412,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     playSound('explode');
                     transitionTo(screens.REVEAL, () => {
                         initRevealEffects();
-                        playHappyBirthdaySong();
+                        speakBirthdayWish();
                     });
                 }, 1000);
             }
@@ -1665,7 +1665,7 @@ document.addEventListener("DOMContentLoaded", () => {
         playSound('click');
         clearInterval(fireworkTimer);
         isRevealActive = false;
-        stopHappyBirthdaySong();
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
         transitionTo(screens.LETTER, () => {
             startTypewriterLetter();
         });
@@ -1865,75 +1865,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // -------------------------------------------------------------------------
-    // Synthesized Happy Birthday Music Box Song Loop
+    // Synthesized Speech Birthday Wish
     // -------------------------------------------------------------------------
-    let bdaySongTimeoutIds = [];
-    
-    function playHappyBirthdaySong() {
-        if (!audioCtx) initAudioContext();
-        if (!audioCtx) return;
-        
-        stopHappyBirthdaySong();
-        
-        const now = audioCtx.currentTime;
-        const melody = [
-            [261.63, 0.75], [261.63, 0.25], [293.66, 1.0], [261.63, 1.0], [349.23, 1.0], [329.63, 2.0],
-            [261.63, 0.75], [261.63, 0.25], [293.66, 1.0], [261.63, 1.0], [392.00, 1.0], [349.23, 2.0],
-            [261.63, 0.75], [261.63, 0.25], [523.25, 1.0], [440.00, 1.0], [349.23, 1.0], [329.63, 1.0], [293.66, 2.0],
-            [466.16, 0.75], [466.16, 0.25], [440.00, 1.0], [349.23, 1.0], [392.00, 1.0], [349.23, 2.0]
-        ];
-        
-        const beatDuration = 0.44; 
-        let accumulatedTime = 0;
-        
-        melody.forEach((note) => {
-            const freq = note[0];
-            const beats = note[1];
-            const duration = beats * beatDuration;
+    function speakBirthdayWish() {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance("Happy Birthday, my love!");
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(voice => 
+                voice.lang.includes('en') && (voice.name.includes('Google') || voice.name.includes('Natural') || voice.name.includes('Premium'))
+            ) || voices.find(voice => voice.lang.includes('en'));
             
-            const timeoutId = setTimeout(() => {
-                if (!audioCtx) return;
-                
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                
-                const harmonic = audioCtx.createOscillator();
-                const harmonicGain = audioCtx.createGain();
-                harmonic.type = 'sine';
-                harmonic.frequency.setValueAtTime(freq * 2, audioCtx.currentTime);
-                
-                gain.gain.setValueAtTime(0, audioCtx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.16, audioCtx.currentTime + 0.03);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration - 0.05);
-                
-                harmonicGain.gain.setValueAtTime(0, audioCtx.currentTime);
-                harmonicGain.gain.linearRampToValueAtTime(0.05, audioCtx.currentTime + 0.03);
-                harmonicGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration * 0.65);
-                
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                
-                harmonic.connect(harmonicGain);
-                harmonicGain.connect(audioCtx.destination);
-                
-                osc.start();
-                harmonic.start();
-                
-                osc.stop(audioCtx.currentTime + duration);
-                harmonic.stop(audioCtx.currentTime + duration);
-            }, accumulatedTime * 1000);
-            
-            bdaySongTimeoutIds.push(timeoutId);
-            accumulatedTime += duration + 0.06;
-        });
-    }
-    
-    function stopHappyBirthdaySong() {
-        bdaySongTimeoutIds.forEach(id => clearTimeout(id));
-        bdaySongTimeoutIds = [];
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+            }
+            utterance.pitch = 1.05;
+            utterance.rate = 0.85;
+            utterance.volume = 1.0;
+            window.speechSynthesis.speak(utterance);
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -1942,7 +1892,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const replayBtn = document.getElementById("replay-btn");
     replayBtn.addEventListener("click", () => {
         playSound('click');
-        stopHappyBirthdaySong();
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
         
         isUnlocked = false;
         
