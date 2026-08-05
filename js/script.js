@@ -1422,9 +1422,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 setTimeout(() => {
                     playSound('explode');
+                    speakBirthdayWish();
                     transitionTo(screens.REVEAL, () => {
                         initRevealEffects();
-                        speakBirthdayWish();
                     });
                 }, 1000);
             }
@@ -1885,8 +1885,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const utterance = new SpeechSynthesisUtterance("Happy Birthday, my love!");
             const voices = window.speechSynthesis.getVoices();
             
-            // Sweet female voice keywords across Windows, macOS, Chrome, iOS, and Android
-            const femaleKeywords = ['zira', 'samantha', 'google us english', 'google uk english female', 'hazel', 'susan', 'victoria', 'karen', 'female', 'natural'];
+            // Sweet exciting female voice keywords across Windows, macOS, Chrome, iOS, and Android
+            const femaleKeywords = ['zira', 'sabrina', 'samantha', 'google us english', 'google uk english female', 'victoria', 'hazel', 'susan', 'karen', 'tessa', 'fiona', 'female', 'natural'];
             
             let preferredVoice = null;
             for (let keyword of femaleKeywords) {
@@ -1905,9 +1905,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 utterance.voice = preferredVoice;
             }
             
-            // Sweet voice parameters: slightly higher pitch (1.1) and a soft, natural pace (0.85)
-            utterance.pitch = 1.1;
-            utterance.rate = 0.85;
+            // Sweet exciting parameters: higher pitch (1.2) and energetic pace (0.95)
+            utterance.pitch = 1.2;
+            utterance.rate = 0.95;
             utterance.volume = 1.0;
             window.speechSynthesis.speak(utterance);
         }
