@@ -78,7 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Play custom synthesized sounds
     function playSound(type) {
         try {
-            if (!audioCtx) return;
             initAudioContext();
             if (!audioCtx) return;
             
@@ -966,8 +965,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const enterVaultBtn = document.getElementById("enter-vault-btn");
     if (enterVaultBtn) {
         enterVaultBtn.addEventListener("click", () => {
-            playSound('click');
-            startCinematicAudio();
+            try {
+                playSound('click');
+            } catch (e) {
+                console.warn("Click sound failed:", e);
+            }
+            
+            try {
+                startCinematicAudio();
+            } catch (e) {
+                console.warn("Cinematic audio failed to start:", e);
+            }
+            
             transitionTo(screens.UNLOCK);
         });
     }
