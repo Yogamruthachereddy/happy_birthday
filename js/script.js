@@ -1204,6 +1204,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             });
         }
+        
+        // Trigger responsive scale immediately
+        resizeScrapbook();
     }
 
     function scrapeMemoriesData() {
@@ -2008,6 +2011,87 @@ document.addEventListener("DOMContentLoaded", () => {
         transitionTo(screens.LOADING, () => {
             startLoadingTypewriter();
         });
+    });
+
+    // -------------------------------------------------------------------------
+    // Responsive Aspect-Ratio Book Scaling Engine
+    // -------------------------------------------------------------------------
+    function resizeScrapbook() {
+        const book = document.getElementById("scrapbook");
+        if (!book) return;
+        
+        const container = document.querySelector(".book-container");
+        if (!container) return;
+        
+        // Base width/height matching desktop CSS values
+        const baseWidth = 800;
+        const baseHeight = 520;
+        
+        // Available space
+        const padding = 32;
+        const maxWidth = window.innerWidth - padding;
+        const maxHeight = window.innerHeight - 200; // Leave space for headers & pagination buttons below
+        
+        // Calculate dynamic scale factor
+        const scaleX = maxWidth / baseWidth;
+        const scaleY = maxHeight / baseHeight;
+        let scale = Math.min(scaleX, scaleY);
+        
+        // Constraints
+        if (scale > 1) scale = 1;
+        if (scale < 0.38) scale = 0.38;
+        
+        // Apply transform
+        book.style.transform = `scale(${scale})`;
+        book.style.transformOrigin = "center center";
+        
+        // Update container sizes to flow pages cleanly
+        const wrapper = document.querySelector(".book-wrapper") || book.parentElement;
+        if (wrapper) {
+            wrapper.style.height = `${baseHeight * scale}px`;
+            wrapper.style.width = `${baseWidth * scale}px`;
+            wrapper.style.display = "flex";
+            wrapper.style.justifyContent = "center";
+            wrapper.style.alignItems = "center";
+        }
+        
+        // Reposition nav buttons cleanly below the scaled book on smaller screens
+        const prevBtn = document.getElementById("prev-page-btn");
+        const nextBtn = document.getElementById("next-page-btn");
+        if (prevBtn && nextBtn) {
+            if (window.innerWidth <= 600 || scale < 0.72) {
+                prevBtn.style.position = "absolute";
+                prevBtn.style.bottom = "-55px";
+                prevBtn.style.left = "25%";
+                prevBtn.style.top = "auto";
+                prevBtn.style.transform = "translateX(-50%)";
+                
+                nextBtn.style.position = "absolute";
+                nextBtn.style.bottom = "-55px";
+                nextBtn.style.right = "25%";
+                nextBtn.style.top = "auto";
+                nextBtn.style.transform = "translateX(50%)";
+            } else {
+                prevBtn.style.position = "";
+                prevBtn.style.bottom = "";
+                prevBtn.style.left = "";
+                prevBtn.style.top = "";
+                prevBtn.style.transform = "";
+                
+                nextBtn.style.position = "";
+                nextBtn.style.bottom = "";
+                nextBtn.style.right = "";
+                nextBtn.style.top = "";
+                nextBtn.style.transform = "";
+            }
+        }
+    }
+
+    // Attach resize listeners
+    window.addEventListener("resize", () => {
+        if (currentActiveScreen === screens.MEMORIES) {
+            resizeScrapbook();
+        }
     });
 
     // Pre-trigger voice loading for smooth SpeechSynthesis activation

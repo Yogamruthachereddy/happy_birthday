@@ -2638,119 +2638,63 @@ body {
     outline: none;
 }
 
-/* Responsive Scrapbook styles */
+/* Responsive Scrapbook Nav Buttons & Layout */
+.nav-page-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--accent-gold);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 10;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.nav-page-btn:hover {
+    background: rgba(255, 107, 139, 0.15);
+    border-color: rgba(255, 107, 139, 0.45);
+    box-shadow: 0 0 20px rgba(255, 107, 139, 0.35);
+    transform: scale(1.08);
+}
+
+.nav-page-btn:active {
+    transform: scale(0.95);
+}
+
+/* Wrapper to center scaled book */
+.book-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin: 0 auto;
+}
+
 @media (max-width: 900px) {
     .book-container {
-        flex-direction: column;
         gap: 1rem;
-    }
-    .book {
-        height: 480px;
-        border-radius: 8px;
-    }
-    .page-face {
-        padding: 1.2rem;
-    }
-    .scrapbook-polaroid {
-        padding: 0.6rem 0.6rem 1.2rem 0.6rem;
-    }
-    .scrapbook-img-frame {
-        height: 160px;
     }
 }
 
 @media (max-width: 600px) {
-    /* Stack book pages vertically on mobile screens so all spreads are fully visible */
-    .book {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 1.5rem !important;
-        height: auto !important;
-        min-height: 440px;
-        perspective: none !important;
-        position: relative;
+    .book-container {
+        padding-bottom: 70px !important;
+        margin: 1rem auto;
     }
-    
-    .page {
-        position: relative !important;
-        width: 100% !important;
-        height: 420px !important;
-        right: auto !important;
-        left: auto !important;
-        transform: none !important;
-        transition: none !important;
-        opacity: 1 !important;
-        pointer-events: auto !important;
-        display: none !important; /* Hide by default */
-    }
-    
-    /* Show only the active flipped page (left page / top stack card) */
-    .page.flipped {
-        display: none !important;
-    }
-    
-    .page.flipped:last-of-type {
-        display: block !important;
-    }
-    
-    /* Show only the active unflipped page (right page / bottom stack card) */
-    .page:not(.flipped) {
-        display: block !important;
-    }
-    
-    .page:not(.flipped) ~ .page:not(.flipped) {
-        display: none !important;
-    }
-    
-    /* Normalize page-face styles for vertical cards */
-    .page-face {
-        position: absolute !important;
-        width: 100% !important;
-        height: 100% !important;
-        top: 0;
-        left: 0;
-        backface-visibility: visible !important;
-        transform: none !important;
-        border-radius: 12px !important;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45) !important;
-    }
-    
-    /* Flipped page shows back face (memory page) and hides cover/front */
-    .page.flipped:last-of-type .page-front {
-        display: none !important;
-    }
-    
-    .page.flipped:last-of-type .page-back {
-        display: block !important;
-    }
-    
-    /* Unflipped page shows front face (memory page) and hides back */
-    .page:not(.flipped) .page-front {
-        display: block !important;
-    }
-    
-    .page:not(.flipped) .page-back {
-        display: none !important;
-    }
-    
-    /* Position the pagination buttons cleanly beneath the vertical cards */
-    .prev-page-btn, .next-page-btn {
-        width: 46px !important;
-        height: 46px !important;
-        position: absolute !important;
-        bottom: -75px !important;
-    }
-    
-    .prev-page-btn {
-        left: 20% !important;
-    }
-    
-    .next-page-btn {
-        right: 20% !important;
-    }
-    
-    .scrapbook-album-container {
-        padding-bottom: 95px !important;
+}
+
+@media (max-height: 500px) {
+    .book-container {
+        padding-bottom: 60px !important;
+        margin: 0.5rem auto;
     }
 }
 
